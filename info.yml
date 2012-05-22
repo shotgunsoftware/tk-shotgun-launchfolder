@@ -1,0 +1,27 @@
+#
+# Copyright (c) 2012 Shotgun Software, Inc
+# ----------------------------------------------------
+#
+# Metadata defining the behaviour and requirements for this app
+
+
+# expected fields in the configuration file for this app
+configuration:
+    entity_types:
+        type: list
+        values: {type: shotgun_entity_type}
+        default_value: [Sequence,Shot,Asset,Task]
+    
+    deny_permissions:
+        type: list
+        values: {type: shotgun_permission_group}
+        allows_empty: True
+    
+    deny_platforms:
+        type: list
+        values: {type: str}
+        allows_empty: True
+
+# the Shotgun fields that this app needs in order to operate correctly
+requires_shotgun_fields:
+
