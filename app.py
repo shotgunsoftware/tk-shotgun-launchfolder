@@ -10,7 +10,7 @@ import sys
 import os
 import platform
 
-class LaunchFolder(tank.system.Application):
+class LaunchFolder(tank.platform.Application):
     
     def init_app(self):
         entity_types = self.get_setting("entity_types")
