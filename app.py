@@ -28,7 +28,6 @@ class LaunchFolder(tank.platform.Application):
         self.engine.register_command("show_in_filesystem", self.show_in_filesystem, p)
             
     def launch(self, path):
-
         self.engine.log_debug("Launching file system viewer for folder %s" % path)        
         
         # get the setting        
@@ -54,11 +53,8 @@ class LaunchFolder(tank.platform.Application):
         paths = []
         
         for eid in entity_ids:
-
-            entity = {"id": eid, "type": entity_type}
-            
             # Use the path cache to look up all paths linked to the task's entity
-            entity_paths = self.tank.get_paths_for_entity(entity)
+            entity_paths = self.tank.find_paths_for_entity(entity_type, eid)
             
             if len(entity_paths) == 0:
                 self.engine.log_info("No location exists on disk yet for one of the entities. "
