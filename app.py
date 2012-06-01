@@ -54,7 +54,7 @@ class LaunchFolder(tank.platform.Application):
         
         for eid in entity_ids:
             # Use the path cache to look up all paths linked to the task's entity
-            entity_paths = self.tank.find_paths_for_entity(entity_type, eid)
+            entity_paths = self.tank.paths_from_entity(entity_type, eid)
             
             if len(entity_paths) == 0:
                 self.log_info("No location exists on disk yet for one of the entities. "
