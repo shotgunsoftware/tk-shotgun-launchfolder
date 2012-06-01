@@ -28,7 +28,7 @@ class LaunchFolder(tank.platform.Application):
         self.engine.register_command("show_in_filesystem", self.show_in_filesystem, p)
             
     def launch(self, path):
-        self.engine.log_debug("Launching file system viewer for folder %s" % path)        
+        self.log_debug("Launching file system viewer for folder %s" % path)        
         
         # get the setting        
         system = platform.system()
@@ -43,10 +43,10 @@ class LaunchFolder(tank.platform.Application):
         else:
             raise Exception("Platform '%s' is not supported." % system)
         
-        self.engine.log_debug("Executing command '%s'" % cmd)
+        self.log_debug("Executing command '%s'" % cmd)
         exit_code = os.system(cmd)
         if exit_code != 0:
-            self.engine.log_error("Failed to launch '%s'!" % cmd)
+            self.log_error("Failed to launch '%s'!" % cmd)
 
     
     def show_in_filesystem(self, entity_type, entity_ids):
@@ -57,7 +57,7 @@ class LaunchFolder(tank.platform.Application):
             entity_paths = self.tank.find_paths_for_entity(entity_type, eid)
             
             if len(entity_paths) == 0:
-                self.engine.log_info("No location exists on disk yet for one of the entities. "
+                self.log_info("No location exists on disk yet for one of the entities. "
                                      "Please use shotgun to create folders and then try again!") 
                 return       
             paths.extend(entity_paths)
