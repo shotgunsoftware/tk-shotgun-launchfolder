@@ -10,7 +10,7 @@ configuration:
     entity_types:
         type: list
         values: {type: shotgun_entity_type}
-        default_value: [Sequence,Shot,Asset,Task]
+        default_value: [Sequence,Shot,Asset]
     
     deny_permissions:
         type: list
