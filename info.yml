@@ -11,16 +11,27 @@ configuration:
         type: list
         values: {type: shotgun_entity_type}
         default_value: [Sequence,Shot,Asset]
-    
+        description: "List of Shotgun entity types where this 
+                     tank action should be visible on the Actions menu." 
+        
     deny_permissions:
         type: list
         values: {type: shotgun_permission_group}
         allows_empty: True
+        description: "An optional parameter which lets you limit the visibility of this app. 
+                     If you for example put in ['Artist'] as the value for this parameter, 
+                     any user belonging to the shotgun permissions group Artist will not be 
+                     able to see or execute the App."
     
     deny_platforms:
         type: list
         values: {type: str}
         allows_empty: True
+        description: "An optional parameter which lets you turn off this app on certain platforms. 
+                     If you don't want it to appear on the Tank action menu for a platform, just 
+                     include it in the the deny_platforms list. Valid values are 
+                     Windows, Mac and Linux."    
+                
 
 # the Shotgun fields that this app needs in order to operate correctly
 requires_shotgun_fields:
