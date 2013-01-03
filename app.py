@@ -8,7 +8,6 @@ App that launches a folder browser from inside of Shotgun
 import tank
 import sys
 import os
-import platform
 
 class LaunchFolder(tank.platform.Application):
     
@@ -31,14 +30,14 @@ class LaunchFolder(tank.platform.Application):
         self.log_debug("Launching file system viewer for folder %s" % path)        
         
         # get the setting        
-        system = platform.system()
+        system = sys.platform
         
         # run the app
-        if system == "Linux":
+        if system == "linux2":
             cmd = 'xdg-open "%s"' % path
-        elif system == "Darwin":
+        elif system == "darwin":
             cmd = 'open "%s"' % path
-        elif system == "Windows":
+        elif system == "win32":
             cmd = 'cmd.exe /C start "Folder" "%s"' % path
         else:
             raise Exception("Platform '%s' is not supported." % system)
