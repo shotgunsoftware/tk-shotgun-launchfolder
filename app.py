@@ -53,7 +53,8 @@ class LaunchFolder(tank.platform.Application):
         
         for eid in entity_ids:
             # Use the path cache to look up all paths linked to the task's entity
-            entity_paths = self.tank.paths_from_entity(entity_type, eid)
+            context = self.tank.context_from_entity(entity_type, eid)
+            entity_paths = self.tank.paths_from_entity(entity_type, eid, context)
             paths.extend(entity_paths)
                     
         # More than likely the Task entity isn't represented in the filesystem
@@ -66,7 +67,8 @@ class LaunchFolder(tank.platform.Application):
             tasks = self.shotgun.find("Task", [filters], ["entity"])
             for task in tasks:
                 if task["entity"]:
-                    entity_paths = self.tank.paths_from_entity(task["entity"]["type"], task["entity"]["id"])
+                    context = self.tank.context_from_entity(task["entity"]["type"], task["entity"]["id"])
+                    entity_paths = self.tank.paths_from_entity(task["entity"]["type"], task["entity"]["id"], context)
                     paths.extend(entity_paths)
         
         # If there's still no paths found, report an error.
