@@ -49,35 +49,22 @@ class LaunchFolder(tank.platform.Application):
 
     
     def show_in_filesystem(self, entity_type, entity_ids):
+        """
+        Pop up a filesystem finder window for each folder associated
+        with the given entity ids.
+        """
         paths = []
         
         for eid in entity_ids:
             # Use the path cache to look up all paths linked to the task's entity
             context = self.tank.context_from_entity(entity_type, eid)
-            entity_paths = self.tank.paths_from_entity(entity_type, eid, context)
-            paths.extend(entity_paths)
-                    
-        # More than likely the Task entity isn't represented in the filesystem
-        # directly, so if we found no locations above, try the folder(s) for the
-        # Task's link entity instead.
-        if len(paths) == 0 and entity_type == "Task":
-            filters = ["id","in"]
-            filters.extend(entity_ids)
-            
-            tasks = self.shotgun.find("Task", [filters], ["entity"])
-            for task in tasks:
-                if task["entity"]:
-                    context = self.tank.context_from_entity(task["entity"]["type"], task["entity"]["id"])
-                    entity_paths = self.tank.paths_from_entity(task["entity"]["type"], task["entity"]["id"], context)
-                    paths.extend(entity_paths)
-        
-        # If there's still no paths found, report an error.
+            paths.extend( context.filesystem_locations )
+                            
         if len(paths) == 0:
             self.log_info("No location exists on disk yet for any of the selected entities. "
-                        "Please use shotgun to create folders and then try again!")
-            return
-        
-        # launch folder windows
-        for x in paths:
-            self.launch(x)
+                          "Please use shotgun to create folders and then try again!")
+        else:
+            # launch folder windows
+            for x in paths:
+                self.launch(x)
     
