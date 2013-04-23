@@ -18,7 +18,6 @@ class LaunchFolder(tank.platform.Application):
         
         p = {
             "title": "Show in File System",
-            "entity_types": entity_types,
             "deny_permissions": deny_permissions,
             "deny_platforms": deny_platforms,
             "supports_multiple_selection": True

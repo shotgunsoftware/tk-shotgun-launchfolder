@@ -7,12 +7,6 @@
 
 # expected fields in the configuration file for this app
 configuration:
-    entity_types:
-        type: list
-        values: {type: shotgun_entity_type}
-        default_value: [Sequence,Shot,Asset]
-        description: "List of Shotgun entity types where this 
-                     tank action should be visible on the Actions menu." 
         
     deny_permissions:
         type: list
@@ -42,7 +36,7 @@ description: "Jump from a Shotgun page to the file system."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
-requires_core_version: "v0.12.11"
+requires_core_version: "v0.13.0"
 requires_engine_version: "v0.1.0"
 
 # the engines that this app can operate in:
