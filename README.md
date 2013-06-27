@@ -1,4 +1,4 @@
 tk-shotgun-launchfolder
 =======================
 
-Tank Shotgun Launch folders
+Shotgun Pipeline Toolkit Launch folders
