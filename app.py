@@ -96,6 +96,8 @@ class LaunchFolder(sgtk.platform.Application):
         """
         paths = []
 
+        # As the this method relies on the path_cache to find the folders,
+        # we must check we are in sync before continuing
         self.sgtk.synchronize_filesystem_structure()
 
         for eid in entity_ids:
@@ -111,10 +113,8 @@ class LaunchFolder(sgtk.platform.Application):
                     local_path = None
 
                 if local_path:
-                    if os.path.isdir(local_path):
-                        paths.append(local_path)
-                        continue
-                    elif os.path.isfile(local_path):
+                    if (os.path.isdir(local_path) or os.path.isfile(local_path)):
+                        # If the path is pointing to a valid file or folder then its good to use as is.
                         paths.append(local_path)
                         continue
 
@@ -124,7 +124,7 @@ class LaunchFolder(sgtk.platform.Application):
                     # we would just be gathering the next directory up, ideally need a better way to handle sequences
                     parent_dir = os.path.dirname(local_path)
                     if parent_dir and os.path.isdir(parent_dir):
-                        paths.append(os.path.dirname(local_path))
+                        paths.append(parent_dir)
                         continue
 
             # Use the path cache to look up all paths linked to the task's entity
@@ -139,6 +139,7 @@ class LaunchFolder(sgtk.platform.Application):
 
                 for context_path in context_paths:
                     # Loop over the context paths, and check to see if any of them can be extended with a step path.
+                    # We take the first match we come across.
                     # If it can't fall back to the standard context path
                     step_path = next((step_path for step_path in step_paths if step_path.startswith(context_path)),
                                      None)
