@@ -42,7 +42,7 @@ class LaunchFolder(sgtk.platform.Application):
         if os.path.isfile(path):
             self._launch_filemanager_for_file(path)
         elif os.path.isdir(path):
-            self._launch_filemanager_for_file(path)
+            self._launch_filemanager_for_folder(path)
         else:
             # possibly we have an image sequence and therefore its a symbolic path, instead check to see if
             # the parent folder of the path is valid and try opening that.
@@ -67,7 +67,7 @@ class LaunchFolder(sgtk.platform.Application):
         if os.path.isfile(path):
             raise ValueError(
                 "The path should be a folder not be a file path. "
-                "If you want to open a folder containing a file use _launch_filemanager_for_file path: %s" % path)
+                "If you want to open a folder containing a file use _launch_filemanager_for_file. Path: %s" % path)
 
         # get the setting
         system = sys.platform
@@ -100,7 +100,7 @@ class LaunchFolder(sgtk.platform.Application):
         if not os.path.isfile(path):
             raise ValueError(
                 "The path should be a file path not be a folder path. "
-                "If you want to open a folder use _launch_filemanager_for_folder, path: %s" % path)
+                "If you want to open a folder use _launch_filemanager_for_folder. Path: %s" % path)
 
         # get the setting
         system = sys.platform
