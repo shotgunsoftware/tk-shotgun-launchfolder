@@ -34,9 +34,8 @@ class LaunchFolder(sgtk.platform.Application):
     def launch(self, path):
         """
         Given a path this method will choose the appropriate way to open that as a folder in the OS's default
-        file manager. Folders will be opened as is
-        :param path:
-        :return: None
+        file manager. If the path to the file is invalid then nothing will happen.
+        :param path: A path to a file or folder.
         """
 
         if os.path.isfile(path):
@@ -50,24 +49,21 @@ class LaunchFolder(sgtk.platform.Application):
             # so we would just be gathering the next directory up,
             # ideally need a better way to handle sequences.
             parent_dir = os.path.dirname(path)
-            if parent_dir and os.path.isdir(parent_dir):
-                self._launch_filemanager_for_folder(path)
+            self._launch_filemanager_for_folder(parent_dir)
 
             
     def _launch_filemanager_for_folder(self, path):
         """
         This method will take a path to a folder and open it in the OS's default file manager.
-
         :param path: A folder path
-        :return: None
+        :raises: Exception if the Platform is not supported, and ValueError if the path is not a valid directory.
         """
         self.log_debug("Launching file system viewer for folder %s" % path)
 
         # Check that we don't have a file path.
-        if os.path.isfile(path):
+        if not os.path.isdir(path):
             raise ValueError(
-                "The path should be a folder not be a file path. "
-                "If you want to open a folder containing a file use _launch_filemanager_for_file. Path: %s" % path)
+                "The path \"%s\" is not a valid directory." % path)
 
         # get the setting
         system = sys.platform
@@ -91,16 +87,14 @@ class LaunchFolder(sgtk.platform.Application):
         """
         This method will take a path to a file and open it in the OS's default file manager.
         This is only used for files, for folders use _launch_filemanager_for_folder.
-
         :param path: A file path
-        :return: None
+        :raises: Exception if the Platform is not supported, and ValueError if the path is not a valid file.
         """
         self.log_debug("Launching file system viewer for file %s" % path)
 
         if not os.path.isfile(path):
             raise ValueError(
-                "The path should be a file path not be a folder path. "
-                "If you want to open a folder use _launch_filemanager_for_folder. Path: %s" % path)
+                "The path \"%s\" is not a valid file path." % path)
 
         # get the setting
         system = sys.platform
@@ -111,8 +105,10 @@ class LaunchFolder(sgtk.platform.Application):
             # so if we get passed a file path, only open up the folder.
             cmd = 'xdg-open "%s"' % os.path.dirname(path)
         elif system == "darwin":
+            # -R causes the open command to open a finder window and select the file within the parent directory.
             cmd = 'open -R "%s"' % path
         elif system == "win32":
+            # /select makes windows select the file within the explorer window
             cmd = 'explorer /select,"%s"' % path
         else:
             raise Exception("Platform '%s' is not supported." % system)
@@ -167,7 +163,7 @@ class LaunchFolder(sgtk.platform.Application):
                     file_path_found = True
 
             if not file_path_found:
-                # We've not found path to a specific file for the entity, so we should try to resolve the path
+                # We've not found a path to a specific file for the entity, so we should try to resolve the path
                 # using the path cache instead.
 
                 # Use the path cache to look up all paths linked to the task's entity
