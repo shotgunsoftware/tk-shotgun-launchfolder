@@ -56,7 +56,8 @@ class LaunchFolder(sgtk.platform.Application):
         """
         This method will take a path to a folder and open it in the OS's default file manager.
         :param path: A folder path
-        :raises: Exception if the Platform is not supported, and ValueError if the path is not a valid directory.
+        :raises: Exception: if the Platform is not supported
+        :raises: ValueError: if the path is not a valid directory.
         """
         self.log_debug("Launching file system viewer for folder %s" % path)
 
@@ -88,7 +89,8 @@ class LaunchFolder(sgtk.platform.Application):
         This method will take a path to a file and open it in the OS's default file manager.
         This is only used for files, for folders use _launch_filemanager_for_folder.
         :param path: A file path
-        :raises: Exception if the Platform is not supported, and ValueError if the path is not a valid file.
+        :raises: Exception: if the Platform is not supported
+        :raises: ValueError: if the path is not a valid file.
         """
         self.log_debug("Launching file system viewer for file %s" % path)
 
@@ -168,29 +170,13 @@ class LaunchFolder(sgtk.platform.Application):
 
                 # Use the path cache to look up all paths linked to the task's entity
                 context = self.sgtk.context_from_entity(entity_type, eid)
-                context_paths = context.filesystem_locations
 
-                if context.step:
-                    # As steps are non project entities and not linked from the step to the other entities
-                    # you won't get step paths back from the context.filesystem_locations.
-                    # If we have a step in the context,
-                    # we should check to see if we can resolve the path more deeply using that.
-                    step_paths = self.sgtk.paths_from_entity("Step", context.step["id"])
+                # todo: Add support for step folders, when a step is present in the context, open the step folder
 
-                    for context_path in context_paths:
-                        # Loop over the context paths, and check to see if any of them can be extended with a step path.
-                        # We take the first match we come across.
-                        # If it can't fall back to the standard context path
-                        step_path = next((step_path for step_path in step_paths if step_path.startswith(context_path)),
-                                         None)
-                        if step_path:
-                            paths.append(step_path)
-                        else:
-                            paths.append(context_path)
-                else:
-                    # We don't have a PublishedFile path, or a step path, so we should just use the standard context paths
-                    # associated with this entity in the path cache.
-                    paths.extend(context_paths)
+                # We don't have a PublishedFile path, so we should just use the standard context paths
+                # associated with this entity in the path cache.
+                paths.extend(context.filesystem_locations)
+            self.log_info("paths: %s" % paths)
                             
         if len(paths) == 0:
             self.log_info("No location exists on disk yet for any of the selected entities. "
