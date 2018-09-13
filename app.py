@@ -70,7 +70,7 @@ class LaunchFolder(sgtk.platform.Application):
         system = sys.platform
 
         # run the app
-        if system.startswith("linux2"):
+        if system.startswith("linux"):
             cmd = 'xdg-open "%s"' % path
         elif system == "darwin":
             cmd = 'open "%s"' % path
@@ -128,6 +128,8 @@ class LaunchFolder(sgtk.platform.Application):
         """
 
         # Find the publish so that we can get the path back.
+        # Note there is a bug with the resolve_publish_path method requiring the `code` to be present, even though we
+        # don't really need it. If this bug (SG-8 is fixed in the future we can remove the need to gather the code.
         published_file = self.sgtk.shotgun.find_one("PublishedFile", [["id", "is", entity_id]], ["code", "path"])
         # Resolve the path for the local OS
         try:
@@ -154,17 +156,17 @@ class LaunchFolder(sgtk.platform.Application):
 
         for eid in entity_ids:
 
-            file_path_found = False
+            pub_file_path = None
 
             if entity_type == "PublishedFile":
                 # If the entity type is a PublishedFile, we should try at first to extract the path of the publish
                 # and open the folder for that. If we can't we will fall back on the context driven path.
                 pub_file_path = self._get_published_file_path(eid)
-                if pub_file_path:
-                    paths.append(pub_file_path)
-                    file_path_found = True
 
-            if not file_path_found:
+            if pub_file_path:
+                paths.append(pub_file_path)
+
+            else:
                 # We've not found a path to a specific file for the entity, so we should try to resolve the path
                 # using the path cache instead.
 
