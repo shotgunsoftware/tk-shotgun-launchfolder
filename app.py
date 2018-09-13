@@ -13,6 +13,7 @@ App that launches a folder browser from inside of Shotgun
 """
 
 import sgtk
+from sgtk.util.errors import PublishPathNotDefinedError, PublishPathNotSupported
 import sys
 import os
 
@@ -134,7 +135,8 @@ class LaunchFolder(sgtk.platform.Application):
         # Resolve the path for the local OS
         try:
             local_path = sgtk.util.resolve_publish_path(self.sgtk, published_file)
-        except Exception as e:
+            self.log_debug("Gathered path for PublishedFile entity %s path: %s " % (entity_id, local_path))
+        except (PublishPathNotDefinedError, PublishPathNotSupported) as e:
             # It might fail to resolve the path to the publish if the published file is an uploaded file
             # or URL, in which case we revert to the default context based method.
             self.log_warning("Publish path couldn't be resolved "
@@ -161,6 +163,7 @@ class LaunchFolder(sgtk.platform.Application):
             if entity_type == "PublishedFile":
                 # If the entity type is a PublishedFile, we should try at first to extract the path of the publish
                 # and open the folder for that. If we can't we will fall back on the context driven path.
+                self.log_debug("Getting path for PublishedFile entity %s " % eid)
                 pub_file_path = self._get_published_file_path(eid)
 
             if pub_file_path:
@@ -178,12 +181,12 @@ class LaunchFolder(sgtk.platform.Application):
                 # We don't have a PublishedFile path, so we should just use the standard context paths
                 # associated with this entity in the path cache.
                 paths.extend(context.filesystem_locations)
-            self.log_info("paths: %s" % paths)
                             
         if len(paths) == 0:
             self.log_info("No location exists on disk yet for any of the selected entities. "
                           "Please use shotgun to create folders and then try again!")
         else:
+            self.log_info("Paths to open: %s" % paths)
             # launch folder windows
             for x in paths:
                 self.launch(x)
