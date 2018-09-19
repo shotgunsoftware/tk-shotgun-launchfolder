@@ -16,6 +16,7 @@ import sgtk
 from sgtk.util.errors import PublishPathNotDefinedError, PublishPathNotSupported
 import sys
 import os
+import subprocess
 
 class LaunchFolder(sgtk.platform.Application):
     
@@ -72,18 +73,18 @@ class LaunchFolder(sgtk.platform.Application):
 
         # run the app
         if system.startswith("linux"):
-            cmd = 'xdg-open "%s"' % path
+            cmd_args = ['xdg-open', '"%s"' % path]
         elif system == "darwin":
-            cmd = 'open "%s"' % path
+            cmd_args = ['open', path]
         elif system == "win32":
-            cmd = 'cmd.exe /C start "Folder" "%s"' % path
+            cmd_args = ['cmd.exe', '/C', 'start', '"Folder"', '"%s"' % path]
         else:
             raise Exception("Platform '%s' is not supported." % system)
 
-        self.log_debug("Executing command '%s'" % cmd)
-        exit_code = os.system(cmd)
+        self.log_debug("Executing command '%s'" % cmd_args)
+        exit_code = subprocess.call(cmd_args)
         if exit_code != 0:
-            self.log_error("Failed to launch '%s'!" % cmd)
+            self.log_error("Failed to launch '%s'!" % cmd_args)
 
     def _launch_filemanager_for_file(self, path):
         """
@@ -106,20 +107,20 @@ class LaunchFolder(sgtk.platform.Application):
         if system.startswith("linux"):
             # Can't find a reliable way to open a file browser and select a file on linux,
             # so if we get passed a file path, only open up the folder.
-            cmd = 'xdg-open "%s"' % os.path.dirname(path)
+            cmd_args = ['xdg-open', os.path.dirname(path)]
         elif system == "darwin":
             # -R causes the open command to open a finder window and select the file within the parent directory.
-            cmd = 'open -R "%s"' % path
+            cmd_args = ['open', '-R', path]
         elif system == "win32":
             # /select makes windows select the file within the explorer window
-            cmd = 'explorer /select,"%s"' % path
+            cmd_args = ['explorer', '/select,', path]
         else:
             raise Exception("Platform '%s' is not supported." % system)
 
-        self.log_debug("Executing command '%s'" % cmd)
-        exit_code = os.system(cmd)
+        self.log_debug("Executing command '%s'" % cmd_args)
+        exit_code = subprocess.call(cmd_args)
         if exit_code != 0:
-            self.log_error("Failed to launch '%s'!" % cmd)
+            self.log_error("Failed to launch '%s'!" % cmd_args)
 
     def _get_published_file_path(self, entity_id):
         """
