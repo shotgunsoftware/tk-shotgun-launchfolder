@@ -70,14 +70,15 @@ class LaunchFolder(sgtk.platform.Application):
 
         # get the setting
         system = sys.platform
+        self.log_debug("Detected system: %s" % system)
 
-        # run the app
+        # build the commands for opening the folder on the various OS's
         if system.startswith("linux"):
-            cmd_args = ['xdg-open', '"%s"' % path]
+            cmd_args = ["xdg-open", path]
         elif system == "darwin":
-            cmd_args = ['open', path]
+            cmd_args = ["open", path]
         elif system == "win32":
-            cmd_args = ['cmd.exe', '/C', 'start', '"Folder"', '"%s"' % path]
+            cmd_args= ["cmd.exe", "/C", "start", path ]
         else:
             raise Exception("Platform '%s' is not supported." % system)
 
@@ -102,24 +103,29 @@ class LaunchFolder(sgtk.platform.Application):
 
         # get the setting
         system = sys.platform
+        self.log_debug("Detected system: %s" % system)
 
-        # build a command that will open and ideally select the file in the OS's default file manager.
         if system.startswith("linux"):
-            # Can't find a reliable way to open a file browser and select a file on linux,
-            # so if we get passed a file path, only open up the folder.
-            cmd_args = ['xdg-open', os.path.dirname(path)]
+            cmd_args = ["xdg-open", os.path.dirname(path)]
         elif system == "darwin":
-            # -R causes the open command to open a finder window and select the file within the parent directory.
-            cmd_args = ['open', '-R', path]
+            cmd_args = ["open", "-R", path]
         elif system == "win32":
             # /select makes windows select the file within the explorer window
-            cmd_args = ['explorer', '/select,', path]
+            # The problem with this approach is that it always returns back an error code of 1 even if it
+            # does behave correctly.ß
+            cmd_args = ["explorer", "/select,", path]
         else:
             raise Exception("Platform '%s' is not supported." % system)
 
         self.log_debug("Executing command '%s'" % cmd_args)
         exit_code = subprocess.call(cmd_args)
-        if exit_code != 0:
+
+        if system == "win32":
+            # As mentioned above the Windows command will always return error code 1 regardless of success
+            # So all we can do is check if path exists and hope that it ran.
+            if not os.path.exists(path):
+                self.log_error("Failed to launch '%s'!" % cmd_args)
+        elif exit_code != 0:
             self.log_error("Failed to launch '%s'!" % cmd_args)
 
     def _get_published_file_path(self, entity_id):
