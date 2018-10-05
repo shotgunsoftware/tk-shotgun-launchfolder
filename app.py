@@ -43,7 +43,7 @@ class LaunchFolder(sgtk.platform.Application):
 
         # Find the publish so that we can get the path back.
         # Note there is a bug with the resolve_publish_path method requiring the `code` to be present, even though we
-        # don't really need it. If this bug (SG-8 is fixed in the future we can remove the need to gather the code.
+        # don't really need it. If this bug (SG-8561) is fixed in the future we can remove the need to gather the code.
         published_file = self.sgtk.shotgun.find_one("PublishedFile", [["id", "is", entity_id]], ["code", "path"])
         # Resolve the path for the local OS
         try:
