@@ -14,6 +14,7 @@ App that launches a folder browser from inside of Shotgun
 
 import sgtk
 from sgtk.util.errors import PublishPathNotDefinedError, PublishPathNotSupported
+from sgtk.util import filesystem
 import sys
 import os
 import subprocess
@@ -32,101 +33,6 @@ class LaunchFolder(sgtk.platform.Application):
         }
         
         self.engine.register_command("show_in_filesystem", self.show_in_filesystem, p)
-
-    def launch(self, path):
-        """
-        Given a path this method will choose the appropriate way to open that as a folder in the OS's default
-        file manager. If the path to the file is invalid then nothing will happen.
-        :param path: A path to a file or folder.
-        """
-
-        if os.path.isfile(path):
-            self._launch_filemanager_for_file(path)
-        elif os.path.isdir(path):
-            self._launch_filemanager_for_folder(path)
-        else:
-            # possibly we have an image sequence and therefore its a symbolic path, instead check to see if
-            # the parent folder of the path is valid and try opening that.
-            # todo: The issue with this logic is that possibly it was a directory that just didn't exist,
-            # so we would just be gathering the next directory up,
-            # ideally need a better way to handle sequences.
-            parent_dir = os.path.dirname(path)
-            self._launch_filemanager_for_folder(parent_dir)
-
-            
-    def _launch_filemanager_for_folder(self, path):
-        """
-        This method will take a path to a folder and open it in the OS's default file manager.
-        :param path: A folder path
-        :raises: Exception: if the Platform is not supported
-        :raises: ValueError: if the path is not a valid directory.
-        """
-        self.log_debug("Launching file system viewer for folder %s" % path)
-
-        # Check that we don't have a file path.
-        if not os.path.isdir(path):
-            raise ValueError(
-                "The path \"%s\" is not a valid directory." % path)
-
-        # get the setting
-        system = sys.platform
-        self.log_debug("Detected system: %s" % system)
-
-        # build the commands for opening the folder on the various OS's
-        if system.startswith("linux"):
-            cmd_args = ["xdg-open", path]
-        elif system == "darwin":
-            cmd_args = ["open", path]
-        elif system == "win32":
-            cmd_args= ["cmd.exe", "/C", "start", path ]
-        else:
-            raise Exception("Platform '%s' is not supported." % system)
-
-        self.log_debug("Executing command '%s'" % cmd_args)
-        exit_code = subprocess.call(cmd_args)
-        if exit_code != 0:
-            self.log_error("Failed to launch '%s'!" % cmd_args)
-
-    def _launch_filemanager_for_file(self, path):
-        """
-        This method will take a path to a file and open it in the OS's default file manager.
-        This is only used for files, for folders use _launch_filemanager_for_folder.
-        :param path: A file path
-        :raises: Exception: if the Platform is not supported
-        :raises: ValueError: if the path is not a valid file.
-        """
-        self.log_debug("Launching file system viewer for file %s" % path)
-
-        if not os.path.isfile(path):
-            raise ValueError(
-                "The path \"%s\" is not a valid file path." % path)
-
-        # get the setting
-        system = sys.platform
-        self.log_debug("Detected system: %s" % system)
-
-        if system.startswith("linux"):
-            cmd_args = ["xdg-open", os.path.dirname(path)]
-        elif system == "darwin":
-            cmd_args = ["open", "-R", path]
-        elif system == "win32":
-            # /select makes windows select the file within the explorer window
-            # The problem with this approach is that it always returns back an error code of 1 even if it
-            # does behave correctly.ß
-            cmd_args = ["explorer", "/select,", path]
-        else:
-            raise Exception("Platform '%s' is not supported." % system)
-
-        self.log_debug("Executing command '%s'" % cmd_args)
-        exit_code = subprocess.call(cmd_args)
-
-        if system == "win32":
-            # As mentioned above the Windows command will always return error code 1 regardless of success
-            # So all we can do is check if path exists and hope that it ran.
-            if not os.path.exists(path):
-                self.log_error("Failed to launch '%s'!" % cmd_args)
-        elif exit_code != 0:
-            self.log_error("Failed to launch '%s'!" % cmd_args)
 
     def _get_published_file_path(self, entity_id):
         """
@@ -196,4 +102,4 @@ class LaunchFolder(sgtk.platform.Application):
             self.log_info("Paths to open: %s" % paths)
             # launch folder windows
             for x in paths:
-                self.launch(x)
+                filesystem.open_file_browser(x)
