@@ -99,7 +99,7 @@ class LaunchFolder(sgtk.platform.Application):
             self.log_info("No location exists on disk yet for any of the selected entities. "
                           "Please use shotgun to create folders and then try again!")
         else:
-            self.log_info("Paths to open: %s" % paths)
+            self.log_debug("Paths to open: %s" % paths)
             # launch folder windows
             for x in paths:
                 filesystem.open_file_browser(x)
