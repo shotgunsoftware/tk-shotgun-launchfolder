@@ -15,9 +15,6 @@ App that launches a folder browser from inside of Shotgun
 import sgtk
 from sgtk.util.errors import PublishPathNotDefinedError, PublishPathNotSupported
 from sgtk.util import filesystem
-import sys
-import os
-import subprocess
 
 class LaunchFolder(sgtk.platform.Application):
     
@@ -102,4 +99,10 @@ class LaunchFolder(sgtk.platform.Application):
             self.log_debug("Paths to open: %s" % paths)
             # launch folder windows
             for x in paths:
-                filesystem.open_file_browser(x)
+                try:
+                    filesystem.open_file_browser(x)
+                except ValueError as e:
+                    self.log_error("Failed to open the following path as it is not valid!: '%s' Error: %s" % (x, e))
+                except RuntimeError as e:
+                    # Catch the exception and just re raise it through log_error
+                    self.log_error("%s" % (e))
