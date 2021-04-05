@@ -102,7 +102,7 @@ class LaunchFolder(sgtk.platform.Application):
         if len(paths) == 0:
             self.log_info(
                 "No location exists on disk yet for any of the selected entities. "
-                "Please use shotgun to create folders and then try again!"
+                "Please use SG to create folders and then try again!"
             )
         else:
             self.log_debug("Paths to open: %s" % paths)
