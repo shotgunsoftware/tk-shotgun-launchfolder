@@ -20,7 +20,7 @@ configuration:
         allows_empty: True
         description: "An optional parameter which lets you limit the visibility of this app.
                      If you for example put in ['Artist'] as the value for this parameter,
-                     any user belonging to the shotgun permissions group Artist will not be
+                     any user belonging to the ShotGrid permissions group Artist will not be
                      able to see or execute the App."
 
     deny_platforms:
