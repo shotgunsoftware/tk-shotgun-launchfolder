@@ -20,7 +20,7 @@ configuration:
         allows_empty: True
         description: "An optional parameter which lets you limit the visibility of this app.
                      If you for example put in ['Artist'] as the value for this parameter,
-                     any user belonging to the shotgun permissions group Artist will not be
+                     any user belonging to the ShotGrid permissions group Artist will not be
                      able to see or execute the App."
 
     deny_platforms:
@@ -28,7 +28,7 @@ configuration:
         values: {type: str}
         allows_empty: True
         description: "An optional parameter which lets you turn off this app on certain platforms.
-                     If you don't want it to appear on the Shotgun Pipeline Toolkit action menu for a platform, just
+                     If you don't want it to appear on the ShotGrid Pipeline Toolkit action menu for a platform, just
                      include it in the the deny_platforms list. Valid values are
                      Windows, Mac and Linux."
 
@@ -38,7 +38,7 @@ requires_shotgun_fields:
 
 # More verbose description of this item
 display_name: "Launch Folder"
-description: "Jump from a Shotgun page to the file system."
+description: "Jump from a ShotGrid page to the file system."
 
 # Required minimum versions for this item to run
 requires_shotgun_version:
