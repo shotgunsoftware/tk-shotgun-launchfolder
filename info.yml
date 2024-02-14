@@ -28,7 +28,7 @@ configuration:
         values: {type: str}
         allows_empty: True
         description: "An optional parameter which lets you turn off this app on certain platforms.
-                     If you don't want it to appear on the Flow Production Tracking Toolkit
+                     If you don't want it to appear on the Flow Production Tracking
                      action menu for a platform, just include it in the the deny_platforms list.
                      Valid values are Windows, Mac and Linux."
 
